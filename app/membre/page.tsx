@@ -20,7 +20,7 @@ export default function MembrePage() {
     return () => clearInterval(timer)
   }, [])
   
-  // Enhanced mock data with more variety and details
+  // Tasks assigned by admins - Enhanced mock data with admin assignment details
   const tasks = [
     { 
       id: "1", 
@@ -30,17 +30,25 @@ export default function MembrePage() {
       dueDate: new Date("2024-11-15"),
       priority: "high",
       progress: 75,
-      category: "Documentation"
+      category: "Documentation",
+      assignedBy: "Admin Principal",
+      assignedDate: new Date("2024-11-01"),
+      assignedTo: user?.name || "Membre",
+      department: "IT"
     },
     { 
       id: "2", 
       title: "Présentation Workshop ML", 
-      description: "Préparer et présenter l'atelier sur le Machine Learning", 
+      description: "Préparer et présenter l'atelier sur le Machine Learning pour les nouveaux membres", 
       status: "pending", 
       dueDate: new Date("2024-11-12"),
       priority: "medium",
       progress: 30,
-      category: "Présentation"
+      category: "Présentation",
+      assignedBy: "Chef Département IT",
+      assignedDate: new Date("2024-11-03"),
+      assignedTo: user?.name || "Membre",
+      department: "IT"
     },
     { 
       id: "3", 
@@ -50,17 +58,39 @@ export default function MembrePage() {
       dueDate: new Date("2024-11-05"),
       priority: "high",
       progress: 100,
-      category: "Développement"
+      category: "Développement",
+      assignedBy: "Admin Principal",
+      assignedDate: new Date("2024-10-25"),
+      assignedTo: user?.name || "Membre",
+      department: "IT"
     },
     { 
       id: "4", 
       title: "Mise à jour base de données", 
-      description: "Optimiser les requêtes et mettre à jour la structure", 
+      description: "Optimiser les requêtes et mettre à jour la structure de la base de données principale", 
       status: "pending", 
       dueDate: new Date("2024-11-20"),
       priority: "low",
       progress: 10,
-      category: "Base de données"
+      category: "Base de données",
+      assignedBy: "Admin Technique",
+      assignedDate: new Date("2024-11-05"),
+      assignedTo: user?.name || "Membre",
+      department: "IT"
+    },
+    { 
+      id: "5", 
+      title: "Formation sécurité informatique", 
+      description: "Compléter le module de formation obligatoire sur la sécurité informatique", 
+      status: "pending", 
+      dueDate: new Date("2024-11-18"),
+      priority: "medium",
+      progress: 0,
+      category: "Formation",
+      assignedBy: "Admin RH",
+      assignedDate: new Date("2024-11-06"),
+      assignedTo: user?.name || "Membre",
+      department: "Général"
     },
   ]
   
@@ -186,7 +216,11 @@ export default function MembrePage() {
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-foreground">Mon Tableau de Bord</h1>
-            <p className="text-muted-foreground">Bienvenue, {user?.name || "Membre"}</p>
+            <p className="text-muted-foreground">Bienvenue, {user?.name || "Membre"} - Voici les tâches qui vous sont assignées</p>
+            <div className="flex items-center space-x-2 mt-2">
+              <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+              <span className="text-sm text-primary font-medium">Tâches assignées par l'administration</span>
+            </div>
           </div>
           <Button
             variant="outline"
@@ -309,8 +343,9 @@ export default function MembrePage() {
               <div className="flex justify-between items-center">
                 <CardTitle className="flex items-center space-x-2 text-foreground">
                   <Target className="w-5 h-5 text-primary" />
-                  <span>Mes Tâches</span>
+                  <span>Tâches Assignées par l'Administration</span>
                   <Badge variant="outline">{filteredTasks.length}</Badge>
+                  <div className="w-2 h-2 bg-primary rounded-full animate-pulse ml-2"></div>
                 </CardTitle>
                 
                 {/* Task Filter Buttons */}
@@ -332,10 +367,22 @@ export default function MembrePage() {
             <CardContent>
               <div className="space-y-4">
                 {filteredTasks.map((task) => (
-                  <div key={task.id} className={`p-5 border border-border rounded-xl hover:shadow-md transition-all duration-300 group ${
+                  <div key={task.id} className={`p-5 border border-border rounded-xl hover:shadow-md transition-all duration-300 group relative ${
                     task.priority === "high" ? "border-l-4 border-l-destructive" : 
                     task.priority === "medium" ? "border-l-4 border-l-accent" : "border-l-4 border-l-muted"
                   }`}>
+                    {/* Admin Assignment Header */}
+                    <div className="flex items-center justify-between mb-3 p-2 bg-primary/5 rounded-lg border border-primary/10">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                        <span className="text-xs font-medium text-primary">Assigné par: {task.assignedBy}</span>
+                        <Badge variant="outline" className="text-xs border-primary/20 text-primary">{task.department}</Badge>
+                      </div>
+                      <span className="text-xs text-muted-foreground">
+                        📅 {task.assignedDate.toLocaleDateString('fr-FR')}
+                      </span>
+                    </div>
+
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-start space-x-3 flex-1">
                         {getStatusIcon(task.status)}
@@ -344,16 +391,19 @@ export default function MembrePage() {
                             <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors">{task.title}</h4>
                             <Badge variant="secondary" className="text-xs">{task.category}</Badge>
                           </div>
-                          <p className="text-sm text-muted-foreground mb-2">{task.description}</p>
+                          <p className="text-sm text-muted-foreground mb-3">{task.description}</p>
                           
                           {/* Progress Bar */}
-                          <div className="flex items-center gap-2 mb-2">
+                          <div className="flex items-center gap-2 mb-3">
                             <Progress value={task.progress} className="h-2 flex-1" />
                             <span className="text-xs font-medium text-muted-foreground">{task.progress}%</span>
                           </div>
                           
                           <div className="flex items-center justify-between text-xs text-muted-foreground">
-                            <span>📅 Échéance: {task.dueDate.toLocaleDateString('fr-FR')}</span>
+                            <div className="flex items-center space-x-4">
+                              <span>⏰ Échéance: {task.dueDate.toLocaleDateString('fr-FR')}</span>
+                              <span>👤 Pour: {task.assignedTo}</span>
+                            </div>
                             <Badge className={`text-xs ${
                               task.priority === "high" ? "bg-destructive/10 text-destructive" :
                               task.priority === "medium" ? "bg-accent/10 text-accent" : "bg-muted text-muted-foreground"
@@ -364,7 +414,7 @@ export default function MembrePage() {
                         </div>
                       </div>
                       
-                      <div className="flex items-center space-x-2 ml-4">
+                      <div className="flex flex-col items-end space-y-2 ml-4">
                         <Badge className={getStatusColor(task.status)}>
                           {task.status === "pending" ? "En attente" : task.status === "in-progress" ? "En cours" : "Terminée"}
                         </Badge>
@@ -372,7 +422,7 @@ export default function MembrePage() {
                           <Button
                             size="sm"
                             variant="outline"
-                            className="border-border hover:bg-muted whitespace-nowrap"
+                            className="border-border hover:bg-primary hover:text-primary-foreground whitespace-nowrap transition-all"
                             onClick={() => updateTaskStatus(task.id, task.status === "pending" ? "in-progress" : "completed")}
                           >
                             {task.status === "pending" ? "▶️ Commencer" : "✅ Terminer"}

@@ -27,7 +27,9 @@ export default function AdminEventsPage() {
       maxAttendees: 150,
       registeredAttendees: 67,
       status: "upcoming",
-      isMainEvent: true
+      isMainEvent: true,
+      activationDate: "2025-09-20", // Already active
+      isActive: true
     },
     {
       id: 2,
@@ -39,7 +41,9 @@ export default function AdminEventsPage() {
       maxAttendees: 100,
       registeredAttendees: 45,
       status: "upcoming",
-      isMainEvent: false
+      isMainEvent: false,
+      activationDate: "2025-10-01", // Will be active later
+      isActive: false
     },
     {
       id: 3,
@@ -51,7 +55,9 @@ export default function AdminEventsPage() {
       maxAttendees: 200,
       registeredAttendees: 89,
       status: "completed",
-      isMainEvent: false
+      isMainEvent: false,
+      activationDate: "2025-09-01", // Was active
+      isActive: true
     }
   ]
 
@@ -62,7 +68,8 @@ export default function AdminEventsPage() {
     time: "",
     location: "",
     maxAttendees: "",
-    isMainEvent: false
+    isMainEvent: false,
+    activationDate: "" // Date when event should show on guest page
   })
 
   const handleCreateEvent = () => {
@@ -76,13 +83,20 @@ export default function AdminEventsPage() {
       time: "",
       location: "",
       maxAttendees: "",
-      isMainEvent: false
+      isMainEvent: false,
+      activationDate: ""
     })
   }
 
   const handleSetMainEvent = (eventId: number) => {
     // Here you would update the main event in your backend
     console.log("Setting main event:", eventId)
+  }
+
+  const handleToggleEventActivation = (eventId: number) => {
+    // Here you would toggle the event activation in your backend
+    console.log("Toggling event activation:", eventId)
+    alert("Event activation toggle would be implemented here")
   }
 
   return (
@@ -189,6 +203,16 @@ export default function AdminEventsPage() {
                         placeholder="Enter maximum attendees"
                       />
                     </div>
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-1">Activation Date</label>
+                      <Input
+                        type="date"
+                        value={newEvent.activationDate}
+                        onChange={(e) => setNewEvent({...newEvent, activationDate: e.target.value})}
+                        title="Date when event should appear on guest pages"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">When should this event be visible to guests?</p>
+                    </div>
                     <div className="flex items-center space-x-2">
                       <input
                         type="checkbox"
@@ -253,6 +277,12 @@ export default function AdminEventsPage() {
                             >
                               {event.status}
                             </Badge>
+                            <Badge 
+                              variant={event.isActive ? "default" : "secondary"}
+                              className={event.isActive ? "bg-blue-100 text-blue-800" : "bg-orange-100 text-orange-800"}
+                            >
+                              {event.isActive ? "Live on Site" : "Hidden from Guests"}
+                            </Badge>
                           </div>
                           <p className="text-sm text-muted-foreground mb-3">{event.description}</p>
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-muted-foreground">
@@ -265,9 +295,20 @@ export default function AdminEventsPage() {
                               {event.registeredAttendees}/{event.maxAttendees} registered
                             </div>
                             <div>📍 {event.location}</div>
+                            <div>
+                              🚀 Goes live: {new Date(event.activationDate).toLocaleDateString()}
+                            </div>
                           </div>
                         </div>
                         <div className="flex gap-2 ml-4">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleToggleEventActivation(event.id)}
+                            className={event.isActive ? "text-orange-600 border-orange-200 hover:bg-orange-50" : "text-green-600 border-green-200 hover:bg-green-50"}
+                          >
+                            {event.isActive ? "Hide from Guests" : "Show to Guests"}
+                          </Button>
                           {!event.isMainEvent && (
                             <Button
                               variant="outline"

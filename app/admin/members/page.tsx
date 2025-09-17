@@ -6,24 +6,44 @@ import type { User } from "@/lib/auth"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Plus, Users, UserCheck, Crown } from "lucide-react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Plus, Users, UserCheck, Crown, ArrowLeft, Eye, Trash2 } from "lucide-react"
 import Link from "next/link"
+import { useState } from "react"
 
 export default function AdminMembersPage() {
   const users: User[] = getAllUsers()
+  const [selectedUser, setSelectedUser] = useState<User | null>(null)
 
   const stats = {
     total: users.length,
     admins: users.filter((u) => u.role === "admin").length,
-  chefs: users.filter((u) => u.role === "chef_departement").length,
+    chefs: users.filter((u) => u.role === "chef_departement").length,
     members: users.filter((u) => u.role === "membre").length,
+  }
+
+  const handleDeleteUser = (userId: string) => {
+    if (confirm("Are you sure you want to delete this user?")) {
+      // Here you would normally call your backend API to delete the user
+      console.log("Deleting user:", userId)
+      // For now, just show a message
+      alert("User deletion would be implemented here")
+    }
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-yellow-50 p-6">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-purple-900">Gestion des Membres</h1>
+          <div className="flex items-center gap-4">
+            <Link href="/admin">
+              <Button variant="outline" className="border-purple-200 text-purple-600 hover:bg-purple-50">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Return to Admin
+              </Button>
+            </Link>
+            <h1 className="text-3xl font-bold text-purple-900">Gestion des Membres</h1>
+          </div>
           <Link href="/admin/members/new">
             <Button className="bg-purple-600 hover:bg-purple-700">
               <Plus className="w-4 h-4 mr-2" />
@@ -103,6 +123,71 @@ export default function AdminMembersPage() {
                     >
                       {member.role}
                     </Badge>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => setSelectedUser(member)}
+                          className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                        >
+                          <Eye className="w-4 h-4 mr-1" />
+                          View Details
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-md">
+                        <DialogHeader>
+                          <DialogTitle>Member Details</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <div>
+                            <h3 className="font-semibold text-gray-900">{member.name}</h3>
+                            <p className="text-sm text-gray-600">{member.email}</p>
+                          </div>
+                          <div className="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                              <span className="font-medium">Role:</span>
+                              <p className="text-gray-600">{member.role}</p>
+                            </div>
+                            {member.department && (
+                              <div>
+                                <span className="font-medium">Department:</span>
+                                <p className="text-gray-600">{member.department}</p>
+                              </div>
+                            )}
+                            <div>
+                              <span className="font-medium">Student ID:</span>
+                              <p className="text-gray-600">{member.studentId || "Not provided"}</p>
+                            </div>
+                            <div>
+                              <span className="font-medium">Telegram ID:</span>
+                              <p className="text-gray-600">{member.telegramId || "Not provided"}</p>
+                            </div>
+                            <div>
+                              <span className="font-medium">Discord ID:</span>
+                              <p className="text-gray-600">{member.discordId || "Not provided"}</p>
+                            </div>
+                            <div>
+                              <span className="font-medium">Created At:</span>
+                              <p className="text-gray-600">{member.createdAt.toLocaleDateString()}</p>
+                            </div>
+                            <div>
+                              <span className="font-medium">Last Login:</span>
+                              <p className="text-gray-600">{member.lastLogin?.toLocaleDateString() || "Never"}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => handleDeleteUser(member.id)}
+                      className="text-red-600 border-red-200 hover:bg-red-50"
+                    >
+                      <Trash2 className="w-4 h-4 mr-1" />
+                      Delete
+                    </Button>
                   </div>
                 </div>
               ))}

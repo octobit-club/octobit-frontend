@@ -289,35 +289,6 @@ export default function ChefDepartementPage() {
 
           <TabsContent value="dashboard" className="space-y-6">
             {/* Quick Actions */}
-            <Card className="border-border bg-card">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-foreground">
-                  <Settings className="h-5 w-5 text-primary" />
-                  Actions Rapides
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-12">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Nouvelle Tâche
-                  </Button>
-                  <Button className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90 h-12">
-                    <MessageSquare className="w-4 h-4 mr-2" />
-                    Nouvelle Annonce
-                  </Button>
-                  <Button variant="outline" className="w-full border-border bg-transparent hover:bg-muted h-12">
-                    <UserCheck className="w-4 h-4 mr-2" />
-                    Gérer Équipe
-                  </Button>
-                  <Button variant="outline" className="w-full border-border bg-transparent hover:bg-muted h-12">
-                    <Calendar className="w-4 h-4 mr-2" />
-                    Planifier Événement
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
             {/* Dashboard Overview Content */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Recent Tasks */}
@@ -444,27 +415,383 @@ export default function ChefDepartementPage() {
           </TabsContent>
 
           <TabsContent value="tasks" className="space-y-6">
-            <div className="text-center py-12">
-              <Target className="h-16 w-16 text-muted-foreground mx-auto mb-4 opacity-50" />
-              <p className="text-muted-foreground text-lg">Gestion des tâches</p>
-              <p className="text-muted-foreground text-sm mt-2">Interface détaillée pour la gestion des tâches</p>
+            {/* Task Management Interface */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Task Creation Quick Form */}
+              <Card className="lg:col-span-2 border-border bg-card">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center gap-2 text-foreground">
+                      <Plus className="h-5 w-5 text-primary" />
+                      Créer une Nouvelle Tâche
+                    </CardTitle>
+                    <Link href="/chef-departement/tasks">
+                      <Button variant="outline" size="sm">
+                        Voir Toutes les Tâches
+                      </Button>
+                    </Link>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-foreground mb-1 block">Titre</label>
+                      <input 
+                        className="w-full p-2 border border-border rounded-md bg-background text-foreground"
+                        placeholder="Titre de la tâche..."
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-foreground mb-1 block">Assigner à</label>
+                      <select className="w-full p-2 border border-border rounded-md bg-background text-foreground">
+                        <option>Sélectionner un membre</option>
+                        <option>Alice Johnson</option>
+                        <option>Bob Smith</option>
+                        <option>Carol Williams</option>
+                      </select>
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="text-sm font-medium text-foreground mb-1 block">Description</label>
+                      <textarea 
+                        className="w-full p-2 border border-border rounded-md bg-background text-foreground"
+                        rows={3}
+                        placeholder="Description détaillée de la tâche..."
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-foreground mb-1 block">Priorité</label>
+                      <select className="w-full p-2 border border-border rounded-md bg-background text-foreground">
+                        <option>Basse</option>
+                        <option>Moyenne</option>
+                        <option>Haute</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-foreground mb-1 block">Date d'échéance</label>
+                      <input 
+                        type="date"
+                        className="w-full p-2 border border-border rounded-md bg-background text-foreground"
+                      />
+                    </div>
+                  </div>
+                  <Button className="w-full mt-4 bg-primary text-primary-foreground hover:bg-primary/90">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Créer la Tâche
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Task Summary */}
+              <div className="space-y-4">
+                <Card className="border-border bg-card">
+                  <CardHeader>
+                    <CardTitle className="text-foreground text-sm">Résumé des Tâches</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-sm text-muted-foreground">En attente</span>
+                      <span className="text-sm font-medium text-destructive">2</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-muted-foreground">En cours</span>
+                      <span className="text-sm font-medium text-accent">1</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-muted-foreground">Terminées</span>
+                      <span className="text-sm font-medium text-secondary">1</span>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border bg-card">
+                  <CardHeader>
+                    <CardTitle className="text-foreground text-sm">Membres Actifs</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {departmentMembers.slice(0, 3).map((member, index) => (
+                        <div key={member.id} className="flex items-center gap-2">
+                          <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center">
+                            <span className="text-xs font-medium text-primary">{member.name[0]}</span>
+                          </div>
+                          <span className="text-xs text-muted-foreground">{member.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
+
+            {/* Recent Tasks */}
+            <Card className="border-border bg-card">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-foreground">
+                  <Clock className="h-5 w-5 text-primary" />
+                  Tâches Récentes
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {activeTasks.slice(0, 3).map((task) => (
+                    <div key={task.id} className="flex items-center justify-between p-3 border border-border rounded-lg hover:bg-muted/20 transition-colors">
+                      <div className="flex items-center gap-3">
+                        {getStatusIcon(task.status)}
+                        <div>
+                          <h4 className="font-medium text-foreground text-sm">{task.title}</h4>
+                          <p className="text-xs text-muted-foreground">Assigné à {task.assignedTo}</p>
+                        </div>
+                      </div>
+                      <Badge className={getPriorityColor(task.priority)}>
+                        {task.priority === "high" ? "Haute" : task.priority === "medium" ? "Moyenne" : "Basse"}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="team" className="space-y-6">
-            <div className="text-center py-12">
-              <Users className="h-16 w-16 text-muted-foreground mx-auto mb-4 opacity-50" />
-              <p className="text-muted-foreground text-lg">Gestion d'équipe</p>
-              <p className="text-muted-foreground text-sm mt-2">Interface détaillée pour la gestion des membres</p>
+            {/* Team Management Interface */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Team Overview */}
+              <Card className="lg:col-span-2 border-border bg-card">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center gap-2 text-foreground">
+                      <Users className="h-5 w-5 text-primary" />
+                      Membres du Département
+                    </CardTitle>
+                    <Link href="/chef-departement/members">
+                      <Button variant="outline" size="sm">
+                        Voir Tous les Membres
+                      </Button>
+                    </Link>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {departmentMembers.map((member) => (
+                      <div key={member.id} className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted/20 transition-colors">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                            <span className="font-medium text-primary">{member.name[0]}</span>
+                          </div>
+                          <div>
+                            <h4 className="font-medium text-foreground">{member.name}</h4>
+                            <p className="text-sm text-muted-foreground">{member.role === "chef_departement" ? "Chef de Département" : "Membre"}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge variant={member.role === "chef_departement" ? "default" : "outline"}>
+                            {member.performance}% perf.
+                          </Badge>
+                          <Badge variant="secondary" className="text-xs">
+                            {member.tasksCompleted} tâches
+                          </Badge>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Team Stats */}
+              <div className="space-y-4">
+                <Card className="border-border bg-card">
+                  <CardHeader>
+                    <CardTitle className="text-foreground text-sm">Performance Équipe</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <div>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span className="text-muted-foreground">Moyenne générale</span>
+                          <span className="font-medium text-foreground">{departmentMetrics.averagePerformance}%</span>
+                        </div>
+                        <Progress value={departmentMetrics.averagePerformance} className="h-2" />
+                      </div>
+                      <div>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span className="text-muted-foreground">Tâches complétées</span>
+                          <span className="font-medium text-foreground">{departmentMetrics.totalTasksCompleted}/{departmentMetrics.monthlyGoal}</span>
+                        </div>
+                        <Progress value={(departmentMetrics.totalTasksCompleted / departmentMetrics.monthlyGoal) * 100} className="h-2" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border bg-card">
+                  <CardHeader>
+                    <CardTitle className="text-foreground text-sm flex items-center gap-2">
+                      <Award className="h-4 w-4 text-primary" />
+                      Top Performers
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {topPerformers.map((member, index) => (
+                        <div key={member.id} className="flex items-center gap-2">
+                          <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                            index === 0 ? 'bg-yellow-100 text-yellow-800' : 
+                            index === 1 ? 'bg-gray-100 text-gray-800' : 
+                            'bg-orange-100 text-orange-800'
+                          }`}>
+                            {index + 1}
+                          </div>
+                          <div className="flex-1">
+                            <span className="text-xs font-medium text-foreground">{member.name}</span>
+                            <div className="text-xs text-muted-foreground">{member.performance}%</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </TabsContent>
 
           <TabsContent value="announcements" className="space-y-6">
-            <div className="text-center py-12">
-              <MessageSquare className="h-16 w-16 text-muted-foreground mx-auto mb-4 opacity-50" />
-              <p className="text-muted-foreground text-lg">Gestion des communications</p>
-              <p className="text-muted-foreground text-sm mt-2">Interface détaillée pour les annonces et communications</p>
+            {/* Announcements Management Interface */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Create Announcement Form */}
+              <Card className="lg:col-span-2 border-border bg-card">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center gap-2 text-foreground">
+                      <MessageSquare className="h-5 w-5 text-primary" />
+                      Créer une Nouvelle Annonce
+                    </CardTitle>
+                    <Link href="/chef-departement/announcements">
+                      <Button variant="outline" size="sm">
+                        Voir Toutes les Annonces
+                      </Button>
+                    </Link>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium text-foreground mb-1 block">Titre</label>
+                      <input 
+                        className="w-full p-2 border border-border rounded-md bg-background text-foreground"
+                        placeholder="Titre de l'annonce..."
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-foreground mb-1 block">Contenu</label>
+                      <textarea 
+                        className="w-full p-2 border border-border rounded-md bg-background text-foreground"
+                        rows={4}
+                        placeholder="Contenu détaillé de l'annonce..."
+                      />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-sm font-medium text-foreground mb-1 block">Cible</label>
+                        <select className="w-full p-2 border border-border rounded-md bg-background text-foreground">
+                          <option>Mon département seulement</option>
+                          <option>Tous les départements</option>
+                          <option>Admins seulement</option>
+                        </select>
+                      </div>
+                      <div className="flex items-center space-x-2 pt-6">
+                        <input 
+                          type="checkbox" 
+                          id="important"
+                          className="rounded border-border"
+                        />
+                        <label htmlFor="important" className="text-sm font-medium text-foreground">
+                          Marquer comme important
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <Button className="w-full mt-4 bg-primary text-primary-foreground hover:bg-primary/90">
+                    <MessageSquare className="h-4 w-4 mr-2" />
+                    Publier l'Annonce
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Announcements Summary */}
+              <div className="space-y-4">
+                <Card className="border-border bg-card">
+                  <CardHeader>
+                    <CardTitle className="text-foreground text-sm">Résumé Communications</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-sm text-muted-foreground">Totales</span>
+                      <span className="text-sm font-medium text-foreground">{announcements.length}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-muted-foreground">Importantes</span>
+                      <span className="text-sm font-medium text-destructive">{announcements.filter(a => a.isImportant).length}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-muted-foreground">Cette semaine</span>
+                      <span className="text-sm font-medium text-accent">2</span>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border bg-card">
+                  <CardHeader>
+                    <CardTitle className="text-foreground text-sm">Statistiques</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-xs">
+                        <span className="text-muted-foreground">Taux de lecture</span>
+                        <span className="font-medium text-foreground">87%</span>
+                      </div>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-muted-foreground">Engagement</span>
+                        <span className="font-medium text-foreground">92%</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
+
+            {/* Recent Announcements */}
+            <Card className="border-border bg-card">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-foreground">
+                  <MessageSquare className="h-5 w-5 text-primary" />
+                  Annonces Récentes
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {recentAnnouncements.map((announcement) => (
+                    <div key={announcement.id} className={`p-4 border rounded-lg hover:bg-muted/20 transition-colors ${
+                      announcement.isImportant ? 'border-destructive/20 bg-destructive/5' : 'border-border'
+                    }`}>
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          {announcement.isImportant && <AlertCircle className="w-4 h-4 text-destructive" />}
+                          <h4 className="font-medium text-foreground text-sm">{announcement.title}</h4>
+                        </div>
+                        <Badge className={`text-xs ${announcement.isImportant ? 'bg-destructive text-destructive-foreground' : 'bg-secondary text-secondary-foreground'}`}>
+                          {announcement.category}
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground mb-2 line-clamp-2">{announcement.content}</p>
+                      <div className="flex justify-between items-center text-xs text-muted-foreground">
+                        <span>📅 {announcement.createdAt.toLocaleDateString('fr-FR')}</span>
+                        <span>👤 {announcement.author}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
         </Tabs>

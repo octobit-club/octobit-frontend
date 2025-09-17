@@ -1,21 +1,63 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { UserPlus, Search, Mail, Phone, MessageCircle, Hash } from "lucide-react"
-import { getAllUsers } from "@/lib/data"
+import { usersAPI } from "@/lib/api"
 import CreateUserDialog from "./create-user-dialog"
+
+interface User {
+  id: string
+  name: string
+  email: string
+  role: string
+  department?: string
+  telegramId?: string
+  discordId?: string
+  studentId?: string
+}
 
 export default function UserManagement() {
   const [searchTerm, setSearchTerm] = useState("")
   const [showCreateDialog, setShowCreateDialog] = useState(false)
-  const users = getAllUsers()
+  const [users, setUsers] = useState<User[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Load users from backend
+  useEffect(() => {
+    const loadUsers = async () => {
+      try {
+        setIsLoading(true)
+        const response = await usersAPI.getAll()
+        const data = response.data || []
+        // Transform the data to match our interface
+        const transformedData = data.map((item: any) => ({
+          id: item.id,
+          name: item.full_name || item.name || 'Unknown',
+          email: item.email,
+          role: item.role,
+          department: item.department,
+          telegramId: item.telegram_id,
+          discordId: item.discord_id,
+          studentId: item.student_id
+        }))
+        setUsers(transformedData)
+      } catch (error) {
+        console.error('Failed to load users:', error)
+        setUsers([])
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadUsers()
+  }, [])
 
   const filteredUsers = users.filter(
-    (user) =>
+    (user: User) =>
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (user.department && user.department.toLowerCase().includes(searchTerm.toLowerCase())),
@@ -55,7 +97,29 @@ export default function UserManagement() {
       </div>
 
       <div className="grid gap-4">
-        {filteredUsers.map((user) => (
+        {isLoading ? (
+          [...Array(3)].map((_, i) => (
+            <Card key={i} className="border-border bg-card">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-muted animate-pulse rounded-full"></div>
+                    <div className="flex-1">
+                      <div className="h-5 w-32 bg-muted animate-pulse rounded mb-2"></div>
+                      <div className="h-4 w-24 bg-muted animate-pulse rounded mb-3"></div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        <div className="h-4 w-40 bg-muted animate-pulse rounded"></div>
+                        <div className="h-4 w-36 bg-muted animate-pulse rounded"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="h-6 w-16 bg-muted animate-pulse rounded"></div>
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        ) : (
+          filteredUsers.map((user: User) => (
           <Card key={user.id} className="border-border bg-card">
             <CardContent className="p-6">
               <div className="flex items-start justify-between">
@@ -92,7 +156,8 @@ export default function UserManagement() {
               </div>
             </CardContent>
           </Card>
-        ))}
+          ))
+        )}
       </div>
 
       <CreateUserDialog open={showCreateDialog} onOpenChange={setShowCreateDialog} />

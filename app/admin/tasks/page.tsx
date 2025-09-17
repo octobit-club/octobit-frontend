@@ -5,7 +5,7 @@ import { getAllTasks, getAllUsers } from "@/lib/data"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Plus, CheckCircle, Clock, AlertCircle } from "lucide-react"
+import { Plus, CheckCircle, Clock, AlertCircle, ArrowLeft, Trash2 } from "lucide-react"
 import Link from "next/link"
 
 export default function AdminTasksPage() {
@@ -15,6 +15,15 @@ export default function AdminTasksPage() {
   const getUserName = (userId: string) => {
     const foundUser = users.find((u) => u.id === userId)
     return foundUser?.name || "Utilisateur inconnu"
+  }
+
+  const handleDeleteTask = (taskId: string) => {
+    if (confirm("Are you sure you want to delete this task?")) {
+      // Here you would normally call your backend API to delete the task
+      console.log("Deleting task:", taskId)
+      // For now, just show a message
+      alert("Task deletion would be implemented here")
+    }
   }
 
   const getStatusIcon = (status: string) => {
@@ -43,7 +52,15 @@ export default function AdminTasksPage() {
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-yellow-50 p-6">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-purple-900">Toutes les Tâches</h1>
+          <div className="flex items-center gap-4">
+            <Link href="/admin">
+              <Button variant="outline" className="border-purple-200 text-purple-600 hover:bg-purple-50">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Return to Admin
+              </Button>
+            </Link>
+            <h1 className="text-3xl font-bold text-purple-900">Toutes les Tâches</h1>
+          </div>
           <Link href="/admin/tasks/new">
             <Button className="bg-purple-600 hover:bg-purple-700">
               <Plus className="w-4 h-4 mr-2" />
@@ -79,6 +96,15 @@ export default function AdminTasksPage() {
                       </span>
                     </div>
                   </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handleDeleteTask(task.id)}
+                    className="text-red-600 border-red-200 hover:bg-red-50 ml-4"
+                  >
+                    <Trash2 className="w-4 h-4 mr-1" />
+                    Delete
+                  </Button>
                 </div>
               </CardContent>
             </Card>

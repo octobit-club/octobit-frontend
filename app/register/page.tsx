@@ -21,6 +21,9 @@ export default function RegisterPage() {
     lastName: "",
     email: "",
     phone: "",
+    telegramId: "",
+    discordId: "",
+    homeAddress: "",
     academicYear: "",
     fieldOfStudy: "",
     preferredDepartment: "",
@@ -222,6 +225,46 @@ export default function RegisterPage() {
                       value={formData.phone}
                       onChange={(e) => handleInputChange("phone", e.target.value)}
                       className="border-border bg-input text-foreground"
+                    />
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="telegramId" className="text-foreground">
+                        Telegram ID
+                      </Label>
+                      <Input
+                        id="telegramId"
+                        type="text"
+                        placeholder="@username"
+                        value={formData.telegramId}
+                        onChange={(e) => handleInputChange("telegramId", e.target.value)}
+                        className="border-border bg-input text-foreground"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="discordId" className="text-foreground">
+                        Discord ID
+                      </Label>
+                      <Input
+                        id="discordId"
+                        type="text"
+                        placeholder="username#1234"
+                        value={formData.discordId}
+                        onChange={(e) => handleInputChange("discordId", e.target.value)}
+                        className="border-border bg-input text-foreground"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="homeAddress" className="text-foreground">
+                      Home Address
+                    </Label>
+                    <Textarea
+                      id="homeAddress"
+                      placeholder="Your full home address..."
+                      value={formData.homeAddress}
+                      onChange={(e) => handleInputChange("homeAddress", e.target.value)}
+                      className="border-border bg-input text-foreground min-h-[80px]"
                     />
                   </div>
                 </div>

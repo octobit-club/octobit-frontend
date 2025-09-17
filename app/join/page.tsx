@@ -13,6 +13,7 @@ import { ArrowLeft, Users, Mail, GraduationCap, Heart } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import SharedHeader from "@/components/shared-header"
+import { joinClubAPI } from "@/lib/api"
 
 export default function JoinPage() {
   const [formData, setFormData] = useState({
@@ -20,6 +21,9 @@ export default function JoinPage() {
     lastName: "",
     email: "",
     phone: "",
+    telegramId: "",
+    discordId: "",
+    homeAddress: "",
     academicYear: "",
     fieldOfStudy: "",
     preferredDepartment: "",
@@ -55,11 +59,33 @@ export default function JoinPage() {
     e.preventDefault()
     setIsSubmitting(true)
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    try {
+      // Submit to backend API using our API utility
+      const result = await joinClubAPI.submit({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
+        telegramId: formData.telegramId || undefined,
+        discordId: formData.discordId || undefined,
+        homeAddress: formData.homeAddress || undefined,
+        academicYear: formData.academicYear,
+        fieldOfStudy: formData.fieldOfStudy,
+        preferredDepartment: formData.preferredDepartment,
+        secondaryDepartment: formData.secondaryDepartment || undefined,
+        skills: formData.skills || undefined,
+        motivation: formData.motivation
+      })
 
-    setIsSubmitting(false)
-    setIsSubmitted(true)
+      console.log('Application submitted successfully:', result)
+      setIsSubmitted(true)
+      
+    } catch (error) {
+      console.error('Error submitting application:', error)
+      alert('Failed to submit application. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleInputChange = (field: string, value: string | boolean) => {
@@ -198,6 +224,46 @@ export default function JoinPage() {
                       value={formData.phone}
                       onChange={(e) => handleInputChange("phone", e.target.value)}
                       className="border-border bg-input text-foreground"
+                    />
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="telegramId" className="text-foreground">
+                        Telegram ID
+                      </Label>
+                      <Input
+                        id="telegramId"
+                        type="text"
+                        placeholder="@username"
+                        value={formData.telegramId}
+                        onChange={(e) => handleInputChange("telegramId", e.target.value)}
+                        className="border-border bg-input text-foreground"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="discordId" className="text-foreground">
+                        Discord ID
+                      </Label>
+                      <Input
+                        id="discordId"
+                        type="text"
+                        placeholder="username#1234"
+                        value={formData.discordId}
+                        onChange={(e) => handleInputChange("discordId", e.target.value)}
+                        className="border-border bg-input text-foreground"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="homeAddress" className="text-foreground">
+                      Home Address
+                    </Label>
+                    <Textarea
+                      id="homeAddress"
+                      placeholder="Your full home address..."
+                      value={formData.homeAddress}
+                      onChange={(e) => handleInputChange("homeAddress", e.target.value)}
+                      className="border-border bg-input text-foreground min-h-[80px]"
                     />
                   </div>
                 </div>

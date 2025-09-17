@@ -9,7 +9,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { MessageSquare, Calendar, Users, Search, Plus, Edit, Trash2, AlertCircle, Filter, BarChart3, TrendingUp, Eye, Heart, Share } from "lucide-react"
-import { getAllAnnouncements, type Announcement } from "@/lib/data"
+import { announcementsAPI } from "@/lib/api"
+
+interface Announcement {
+  id: string
+  title: string
+  content: string
+  isImportant: boolean
+  targetDepartment?: string
+  author: string
+  createdAt: Date
+}
 import CreateAnnouncementDialog from "./create-announcement-dialog"
 
 interface CreateAnnouncementDialogProps {
@@ -27,19 +37,49 @@ export default function AnnouncementManagement() {
   const [editingAnnouncement, setEditingAnnouncement] = useState<Announcement | null>(null)
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [activeTab, setActiveTab] = useState("all")
-  
-  const announcements = getAllAnnouncements()
+  const [announcements, setAnnouncements] = useState<Announcement[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Load announcements from backend
+  useEffect(() => {
+    const loadAnnouncements = async () => {
+      try {
+        setIsLoading(true)
+        const response = await announcementsAPI.getAll()
+        const data = response.data || []
+        // Transform the data to match our interface
+        const transformedData = data.map((item: any) => ({
+          id: item.id,
+          title: item.title,
+          content: item.content,
+          isImportant: item.is_important || false,
+          targetDepartment: item.target_department,
+          author: item.author || 'Admin',
+          createdAt: new Date(item.created_at)
+        }))
+        setAnnouncements(transformedData)
+      } catch (error) {
+        console.error('Failed to load announcements:', error)
+        // Fallback to empty array
+        setAnnouncements([])
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadAnnouncements()
+  }, [])
 
   // Analytics data
   const announcementStats = {
     total: announcements.length,
-    important: announcements.filter(a => a.isImportant).length,
-    thisWeek: announcements.filter(a => {
+    important: announcements.filter((a: Announcement) => a.isImportant).length,
+    thisWeek: announcements.filter((a: Announcement) => {
       const weekAgo = new Date()
       weekAgo.setDate(weekAgo.getDate() - 7)
       return a.createdAt >= weekAgo
     }).length,
-    byDepartment: announcements.reduce((acc, ann) => {
+    byDepartment: announcements.reduce((acc: Record<string, number>, ann: Announcement) => {
       const dept = ann.targetDepartment || "All"
       acc[dept] = (acc[dept] || 0) + 1
       return acc
@@ -48,7 +88,7 @@ export default function AnnouncementManagement() {
 
   const getFilteredAnnouncements = (tabFilter: string = activeTab) => {
     return announcements
-      .filter((announcement) => {
+      .filter((announcement: Announcement) => {
         const matchesSearch = announcement.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                              announcement.content.toLowerCase().includes(searchTerm.toLowerCase())
         const matchesDepartment = filterDepartment === "all" || 
@@ -64,7 +104,7 @@ export default function AnnouncementManagement() {
         
         return matchesSearch && matchesDepartment && matchesImportance && matchesTab
       })
-      .sort((a, b) => {
+      .sort((a: Announcement, b: Announcement) => {
         // First sort by importance (important ones first)
         if (a.isImportant && !b.isImportant) return -1
         if (!a.isImportant && b.isImportant) return 1
@@ -82,9 +122,15 @@ export default function AnnouncementManagement() {
       : "bg-secondary text-secondary-foreground"
   }
 
-  const handleDeleteAnnouncement = (id: string) => {
-    // In a real app, this would call an API to delete the announcement
-    console.log("Delete announcement:", id)
+  const handleDeleteAnnouncement = async (id: string) => {
+    try {
+      await announcementsAPI.delete(id)
+      // Remove the announcement from local state
+      setAnnouncements(prev => prev.filter(a => a.id !== id))
+    } catch (error) {
+      console.error('Failed to delete announcement:', error)
+      // You could add a toast notification here
+    }
   }
 
   return (
@@ -213,8 +259,34 @@ export default function AnnouncementManagement() {
           </Card>
 
           {/* Enhanced Announcements Grid */}
-          <div className={viewMode === "grid" ? "grid grid-cols-1 lg:grid-cols-2 gap-6" : "space-y-4"}>
-            {filteredAnnouncements.map((announcement, index) => (
+          {isLoading ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {[...Array(4)].map((_, i) => (
+                <Card key={i} className="border-border bg-card">
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="h-4 w-16 bg-muted animate-pulse rounded"></div>
+                          <div className="h-4 w-20 bg-muted animate-pulse rounded"></div>
+                        </div>
+                        <div className="h-6 w-3/4 bg-muted animate-pulse rounded"></div>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <div className="h-4 w-full bg-muted animate-pulse rounded"></div>
+                      <div className="h-4 w-2/3 bg-muted animate-pulse rounded"></div>
+                      <div className="h-8 w-full bg-muted animate-pulse rounded"></div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className={viewMode === "grid" ? "grid grid-cols-1 lg:grid-cols-2 gap-6" : "space-y-4"}>
+              {filteredAnnouncements.map((announcement: Announcement, index: number) => (
               <Card key={announcement.id} className={`border-border hover:shadow-lg transition-all duration-300 group ${
                 announcement.isImportant ? 'bg-gradient-to-br from-destructive/5 to-destructive/10 border-destructive/30' : 'bg-card'
               }`}>
@@ -306,9 +378,10 @@ export default function AnnouncementManagement() {
                 </CardContent>
               </Card>
             ))}
-          </div>
+            </div>
+          )}
           
-          {filteredAnnouncements.length === 0 && (
+          {!isLoading && filteredAnnouncements.length === 0 && (
             <Card className="border-border bg-card">
               <CardContent className="text-center py-12">
                 <MessageSquare className="h-16 w-16 text-muted-foreground mx-auto mb-4 opacity-50" />

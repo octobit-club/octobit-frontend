@@ -40,26 +40,23 @@ export default function HomePage() {
   const [nextEvent, setNextEvent] = useState<any>(fallbackEvent)
   const [announcements, setAnnouncements] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  
-  // Form states
-  const [showRegistrationModal, setShowRegistrationModal] = useState(false)
-  const [showAnnouncement, setShowAnnouncement] = useState(true)
-  const [isSubmitted, setIsSubmitted] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [error, setError] = useState("")
-  const [importantAnnouncement, setImportantAnnouncement] = useState<any>(null)
-  
-  const [eventFormData, setEventFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    university: "",
-    experience: "",
-    tshirtSize: "",
-    dietaryRestrictions: "",
-    expectations: "",
-  })
+    id: '1',
+    title: 'Upcoming Tech Workshop',
+    description: 'Join us for an exciting technology workshop. Details will be announced soon.',
+    date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+    time: '2:00 PM - 5:00 PM',
+    location: 'University Campus',
+    category: 'Workshop',
+    image: '/tech-workshop-coding.jpg',
+    currentAttendees: 15,
+    maxAttendees: 50,
+    highlights: [
+      'Hands-on coding experience',
+      'Industry expert speakers',
+      'Networking opportunities',
+      'Free refreshments'
+    ]
+  }
 
   // Load data from backend
   useEffect(() => {
