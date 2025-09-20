@@ -59,6 +59,9 @@ export default function HomePage() {
     tshirtSize: "",
     dietaryRestrictions: "",
     expectations: "",
+    studentId: "",
+    academicYear: "",
+    fieldOfStudy: "",
   })
 
   // Load data from backend
@@ -147,29 +150,14 @@ export default function HomePage() {
           ]
         })
       } finally {
-        setLoading(false)
+        setIsLoading(false)
       }
     }
 
     loadData()
   }, [])
 
-  const [eventFormData, setEventFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    studentId: "",
-    academicYear: "",
-    fieldOfStudy: "",
-    dietaryRestrictions: "",
-    expectations: "",
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [error, setError] = useState("");
-  const [showAnnouncement, setShowAnnouncement] = useState(true);
-  const [showRegistrationModal, setShowRegistrationModal] = useState(false);
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
@@ -323,249 +311,251 @@ export default function HomePage() {
           {nextEvent && (
             <div className="max-w-4xl mx-auto mb-12">
               <div className="space-y-6">
-              <div className="border border-border/20 rounded-lg backdrop-blur-sm">
-                <div className="relative">
-                  <Image
-                    src={nextEvent.image}
-                    alt={nextEvent.title}
-                    width={600}
-                    height={300}
-                    className="w-full h-64 object-cover rounded-t-lg"
-                  />
-                  <Badge className="absolute top-4 right-4 bg-primary text-primary-foreground">
-                    {nextEvent.category}
-                  </Badge>
-                </div>
-                <div className="p-6">
-                  <div className="mb-4">
-                    <h2 className="text-2xl font-bold text-foreground drop-shadow">{nextEvent.title}</h2>
-                    <p className="text-muted-foreground text-base mt-2 drop-shadow">
-                      {nextEvent.description}
-                    </p>
+                <div className="border border-border/20 rounded-lg backdrop-blur-sm">
+                  <div className="relative">
+                    <Image
+                      src={nextEvent.image}
+                      alt={nextEvent.title}
+                      width={600}
+                      height={300}
+                      className="w-full h-64 object-cover rounded-t-lg"
+                    />
+                    <Badge className="absolute top-4 right-4 bg-primary text-primary-foreground">
+                      {nextEvent.category}
+                    </Badge>
                   </div>
-                  <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <Calendar className="mr-3 h-5 w-5 text-primary" />
-                      <div>
-                        <div className="font-medium text-foreground drop-shadow">
-                          {nextEvent.date.toLocaleDateString('en-US', { 
-                            weekday: 'long', 
-                            year: 'numeric', 
-                            month: 'long', 
-                            day: 'numeric' 
-                          })}
+                  <div className="p-6">
+                    <div className="mb-4">
+                      <h2 className="text-2xl font-bold text-foreground drop-shadow">{nextEvent.title}</h2>
+                      <p className="text-muted-foreground text-base mt-2 drop-shadow">
+                        {nextEvent.description}
+                      </p>
+                    </div>
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="flex items-center text-sm text-muted-foreground">
+                          <Calendar className="mr-3 h-5 w-5 text-primary" />
+                          <div>
+                            <div className="font-medium text-foreground drop-shadow">
+                              {nextEvent.date.toLocaleDateString('en-US', { 
+                                weekday: 'long', 
+                                year: 'numeric', 
+                                month: 'long', 
+                                day: 'numeric' 
+                              })}
+                            </div>
+                            <div className="drop-shadow">{nextEvent.date.toLocaleTimeString('en-US', { 
+                              hour: '2-digit', 
+                              minute: '2-digit' 
+                            })}</div>
+                          </div>
                         </div>
-                        <div className="drop-shadow">{nextEvent.date.toLocaleTimeString('en-US', { 
-                          hour: '2-digit', 
-                          minute: '2-digit' 
-                        })}</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <Clock className="mr-3 h-5 w-5 text-primary" />
-                      <div>
-                        <div className="font-medium text-foreground drop-shadow">Duration</div>
-                        <div className="drop-shadow">{nextEvent.duration}</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <MapPin className="mr-3 h-5 w-5 text-primary" />
-                      <div>
-                        <div className="font-medium text-foreground drop-shadow">Location</div>
-                        <div className="drop-shadow">{nextEvent.location}</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <Users className="mr-3 h-5 w-5 text-primary" />
-                      <div>
-                        <div className="font-medium text-foreground drop-shadow">Attendance</div>
-                        <div className="drop-shadow">{nextEvent.currentAttendees}/{nextEvent.maxAttendees} registered</div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Event Highlights */}
-                  <div className="mt-6">
-                    <h4 className="font-semibold text-foreground mb-3 flex items-center drop-shadow">
-                      <Star className="mr-2 h-4 w-4 text-primary" />
-                      What's Included
-                    </h4>
-                    <ul className="grid grid-cols-1 gap-2">
-                      {nextEvent.highlights.map((highlight: string, index: number) => (
-                        <li key={index} className="flex items-center text-sm text-muted-foreground">
-                          <div className="w-2 h-2 bg-primary rounded-full mr-3 flex-shrink-0"></div>
-                          <span className="drop-shadow">{highlight}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
-              {/* Register Button */}
-              <div className="text-center">
-                <Dialog open={showRegistrationModal} onOpenChange={setShowRegistrationModal}>
-                  <DialogTrigger asChild>
-                    <Button 
-                      size="lg" 
-                      className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-4 text-lg"
-                    >
-                      <Calendar className="mr-2 h-6 w-6" />
-                      Register for This Event
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-                    <DialogHeader>
-                      <DialogTitle className="text-2xl text-center">Register for {nextEvent.title}</DialogTitle>
-                    </DialogHeader>
-
-                    <div className="space-y-6">
-                      <div className="text-center mb-4">
-                        <Badge variant="outline" className="text-sm">
-                          {nextEvent.maxAttendees - nextEvent.currentAttendees} spots remaining
-                        </Badge>
+                        <div className="flex items-center text-sm text-muted-foreground">
+                          <Clock className="mr-3 h-5 w-5 text-primary" />
+                          <div>
+                            <div className="font-medium text-foreground drop-shadow">Duration</div>
+                            <div className="drop-shadow">{nextEvent.duration || "3 hours"}</div>
+                          </div>
+                        </div>
+                        <div className="flex items-center text-sm text-muted-foreground">
+                          <MapPin className="mr-3 h-5 w-5 text-primary" />
+                          <div>
+                            <div className="font-medium text-foreground drop-shadow">Location</div>
+                            <div className="drop-shadow">{nextEvent.location}</div>
+                          </div>
+                        </div>
+                        <div className="flex items-center text-sm text-muted-foreground">
+                          <Users className="mr-3 h-5 w-5 text-primary" />
+                          <div>
+                            <div className="font-medium text-foreground drop-shadow">Attendance</div>
+                            <div className="drop-shadow">{nextEvent.currentAttendees}/{nextEvent.maxAttendees} registered</div>
+                          </div>
+                        </div>
                       </div>
                       
-                      <form className="space-y-6" onSubmit={handleEventSubmit} autoComplete="off">
-                        <div className="grid md:grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="firstName" className="text-foreground">First Name</Label>
-                            <Input 
-                              id="firstName" 
-                              value={eventFormData.firstName} 
-                              onChange={handleInputChange} 
-                              placeholder="Enter your first name" 
-                              className="bg-input border-border" 
-                              required 
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="lastName" className="text-foreground">Last Name</Label>
-                            <Input 
-                              id="lastName" 
-                              value={eventFormData.lastName} 
-                              onChange={handleInputChange} 
-                              placeholder="Enter your last name" 
-                              className="bg-input border-border" 
-                              required 
-                            />
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label htmlFor="email" className="text-foreground">Email Address</Label>
-                          <Input 
-                            id="email" 
-                            type="email" 
-                            value={eventFormData.email} 
-                            onChange={handleInputChange} 
-                            placeholder="your.email@example.com" 
-                            className="bg-input border-border" 
-                            required 
-                          />
-                        </div>
-
-                        <div className="grid md:grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="phone" className="text-foreground">Phone Number</Label>
-                            <Input 
-                              id="phone" 
-                              type="tel" 
-                              value={eventFormData.phone} 
-                              onChange={handleInputChange} 
-                              placeholder="+1 (555) 000-0000" 
-                              className="bg-input border-border" 
-                              required
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="studentId" className="text-foreground">Student ID</Label>
-                            <Input 
-                              id="studentId" 
-                              value={eventFormData.studentId} 
-                              onChange={handleInputChange} 
-                              placeholder="202331551801" 
-                              className="bg-input border-border" 
-                              required 
-                            />
-                          </div>
-                        </div>
-
-                        <div className="grid md:grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="academicYear" className="text-foreground">Academic Year</Label>
-                            <Select value={eventFormData.academicYear} onValueChange={(value) => handleSelectChange("academicYear", value)}>
-                              <SelectTrigger id="academicYear" className="bg-input border-border">
-                                <SelectValue placeholder="Select your year" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="1">1st Year</SelectItem>
-                                <SelectItem value="2">2nd Year</SelectItem>
-                                <SelectItem value="3">3rd Year</SelectItem>
-                                <SelectItem value="4">4th Year</SelectItem>
-                                <SelectItem value="graduate">Graduate</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="fieldOfStudy" className="text-foreground">Field of Study</Label>
-                            <Input 
-                              id="fieldOfStudy" 
-                              value={eventFormData.fieldOfStudy} 
-                              onChange={handleInputChange} 
-                              placeholder="e.g., Computer Science" 
-                              className="bg-input border-border" 
-                              required 
-                            />
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label htmlFor="dietaryRestrictions" className="text-foreground">Dietary Restrictions (Optional)</Label>
-                          <Input 
-                            id="dietaryRestrictions" 
-                            value={eventFormData.dietaryRestrictions} 
-                            onChange={handleInputChange} 
-                            placeholder="Any food allergies or preferences" 
-                            className="bg-input border-border" 
-                          />
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label htmlFor="expectations" className="text-foreground">What do you hope to learn? (Optional)</Label>
-                          <Textarea 
-                            id="expectations" 
-                            value={eventFormData.expectations} 
-                            onChange={handleInputChange} 
-                            placeholder="Tell us about your goals for this event..." 
-                            className="bg-input border-border min-h-[80px]" 
-                          />
-                        </div>
-
-                        {error && <div className="text-red-500 text-sm">{error}</div>}
-                        <Button 
-                          className="w-full bg-primary text-primary-foreground hover:bg-primary/90" 
-                          size="lg" 
-                          type="submit" 
-                          disabled={isSubmitting}
-                        >
-                          {isSubmitting ? "Registering..." : (
-                            <>
-                              <Calendar className="mr-2 h-5 w-5" />
-                              Register for Event
-                            </>
-                          )}
-                        </Button>
-                      </form>
+                      {/* Event Highlights */}
+                      <div className="mt-6">
+                        <h4 className="font-semibold text-foreground mb-3 flex items-center drop-shadow">
+                          <Star className="mr-2 h-4 w-4 text-primary" />
+                          What's Included
+                        </h4>
+                        <ul className="grid grid-cols-1 gap-2">
+                          {nextEvent.highlights.map((highlight: string, index: number) => (
+                            <li key={index} className="flex items-center text-sm text-muted-foreground">
+                              <div className="w-2 h-2 bg-primary rounded-full mr-3 flex-shrink-0"></div>
+                              <span className="drop-shadow">{highlight}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
                     </div>
-                  </DialogContent>
-                </Dialog>
-              </div>
+                  </div>
+                </div>
+
+                {/* Register Button */}
+                <div className="text-center">
+                  <Dialog open={showRegistrationModal} onOpenChange={setShowRegistrationModal}>
+                    <DialogTrigger asChild>
+                      <Button 
+                        size="lg" 
+                        className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-4 text-lg"
+                      >
+                        <Calendar className="mr-2 h-6 w-6" />
+                        Register for This Event
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle className="text-2xl text-center">Register for {nextEvent.title}</DialogTitle>
+                      </DialogHeader>
+
+                      <div className="space-y-6">
+                        <div className="text-center mb-4">
+                          <Badge variant="outline" className="text-sm">
+                            {nextEvent.maxAttendees - nextEvent.currentAttendees} spots remaining
+                          </Badge>
+                        </div>
+                        
+                        <form className="space-y-6" onSubmit={handleEventSubmit} autoComplete="off">
+                          <div className="grid md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="firstName" className="text-foreground">First Name</Label>
+                              <Input 
+                                id="firstName" 
+                                value={eventFormData.firstName} 
+                                onChange={handleInputChange} 
+                                placeholder="Enter your first name" 
+                                className="bg-input border-border" 
+                                required 
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="lastName" className="text-foreground">Last Name</Label>
+                              <Input 
+                                id="lastName" 
+                                value={eventFormData.lastName} 
+                                onChange={handleInputChange} 
+                                placeholder="Enter your last name" 
+                                className="bg-input border-border" 
+                                required 
+                              />
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="email" className="text-foreground">Email Address</Label>
+                            <Input 
+                              id="email" 
+                              type="email" 
+                              value={eventFormData.email} 
+                              onChange={handleInputChange} 
+                              placeholder="your.email@example.com" 
+                              className="bg-input border-border" 
+                              required 
+                            />
+                          </div>
+
+                          <div className="grid md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="phone" className="text-foreground">Phone Number</Label>
+                              <Input 
+                                id="phone" 
+                                type="tel" 
+                                value={eventFormData.phone} 
+                                onChange={handleInputChange} 
+                                placeholder="+1 (555) 000-0000" 
+                                className="bg-input border-border" 
+                                required
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="studentId" className="text-foreground">Student ID</Label>
+                              <Input 
+                                id="studentId" 
+                                value={eventFormData.studentId} 
+                                onChange={handleInputChange} 
+                                placeholder="202331551801" 
+                                className="bg-input border-border" 
+                                required 
+                              />
+                            </div>
+                          </div>
+
+                          <div className="grid md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="academicYear" className="text-foreground">Academic Year</Label>
+                              <Select value={eventFormData.academicYear} onValueChange={(value) => handleSelectChange("academicYear", value)}>
+                                <SelectTrigger id="academicYear" className="bg-input border-border">
+                                  <SelectValue placeholder="Select your year" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="1">1st Year</SelectItem>
+                                  <SelectItem value="2">2nd Year</SelectItem>
+                                  <SelectItem value="3">3rd Year</SelectItem>
+                                  <SelectItem value="4">4th Year</SelectItem>
+                                  <SelectItem value="graduate">Graduate</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="fieldOfStudy" className="text-foreground">Field of Study</Label>
+                              <Input 
+                                id="fieldOfStudy" 
+                                value={eventFormData.fieldOfStudy} 
+                                onChange={handleInputChange} 
+                                placeholder="e.g., Computer Science" 
+                                className="bg-input border-border" 
+                                required 
+                              />
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="dietaryRestrictions" className="text-foreground">Dietary Restrictions (Optional)</Label>
+                            <Input 
+                              id="dietaryRestrictions" 
+                              value={eventFormData.dietaryRestrictions} 
+                              onChange={handleInputChange} 
+                              placeholder="Any food allergies or preferences" 
+                              className="bg-input border-border" 
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="expectations" className="text-foreground">What do you hope to learn? (Optional)</Label>
+                            <Textarea 
+                              id="expectations" 
+                              value={eventFormData.expectations} 
+                              onChange={handleInputChange} 
+                              placeholder="Tell us about your goals for this event..." 
+                              className="bg-input border-border min-h-[80px]" 
+                            />
+                          </div>
+
+                          {error && <div className="text-red-500 text-sm">{error}</div>}
+                          <Button 
+                            className="w-full bg-primary text-primary-foreground hover:bg-primary/90" 
+                            size="lg" 
+                            type="submit" 
+                            disabled={isSubmitting}
+                          >
+                            {isSubmitting ? "Registering..." : (
+                              <>
+                                <Calendar className="mr-2 h-5 w-5" />
+                                Register for Event
+                              </>
+                            )}
+                          </Button>
+                        </form>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
               </div>
             </div>
-            </>
-          ) : (
+          )}
+
+          {!nextEvent && (
             <div className="max-w-4xl mx-auto mb-12 text-center">
               <Card className="border-border bg-card/50 backdrop-blur-sm">
                 <CardContent className="p-12">
@@ -578,7 +568,6 @@ export default function HomePage() {
               </Card>
             </div>
           )}
-        </div>
         </div>
       </section>
 
