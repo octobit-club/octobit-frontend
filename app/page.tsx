@@ -1,4 +1,3 @@
-
 "use client";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -28,11 +27,14 @@ export default function RegisterPage() {
     lastName: "",
     email: "",
     phone: "",
+    discordId: "",
+    telegramId: "",
     academicYear: "",
     fieldOfStudy: "",
     preferredDepartment: "",
     motivation: "",
     experience: "",
+    homeAddress: "", // <-- new field added here
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -52,7 +54,7 @@ export default function RegisterPage() {
     setIsSubmitting(true);
     setError("");
     try {
-      const res = await fetch("/api/register", {
+      const res = await fetch("/api/join", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -118,7 +120,7 @@ export default function RegisterPage() {
               Join <span className="text-primary">Octobit</span> Scientific Club
             </h1>
             <p className="text-lg text-muted-foreground mb-6 text-pretty max-w-2xl mx-auto">
-              Dive into innovation with us. Registration opens September 22nd, 2024.
+              Dive into innovation with us. Registration opens September 22nd, 2025.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
               <Link href="/about">
@@ -141,7 +143,7 @@ export default function RegisterPage() {
               </Link>
             </div>
             <Badge variant="secondary" className="bg-secondary text-secondary-foreground px-4 py-2">
-              🎉 New Academic Year 2024-2025
+              🎉 New Academic Year 2025-2026
             </Badge>
           </div>
 
@@ -178,7 +180,50 @@ export default function RegisterPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="phone" className="text-foreground">Phone Number</Label>
-                  <Input id="phone" type="tel" value={formData.phone} onChange={handleInputChange} placeholder="+1 (555) 000-0000" className="bg-input border-border" />
+                  <Input id="phone" type="tel" value={formData.phone} onChange={handleInputChange} placeholder="+213550505050" className="bg-input border-border" />
+                </div>
+
+                {/* HOME ADDRESS (NEW) */}
+                <div className="space-y-2">
+                  <Label htmlFor="homeAddress" className="text-foreground">Home Address (Optional)</Label>
+                  <Textarea
+                    id="homeAddress"
+                    value={formData.homeAddress}
+                    onChange={handleInputChange}
+                    placeholder="Street, City, Postal Code, Country"
+                    className="bg-input border-border min-h-[80px]"
+                  />
+                  <p className="text-xs text-muted-foreground">Optional — helps us plan in-person events and logistics.</p>
+                </div>
+
+                {/* Discord and Telegram IDs */}
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="discordId" className="text-foreground">Discord ID (Optional)</Label>
+                    <Input 
+                      id="discordId" 
+                      value={formData.discordId} 
+                      onChange={handleInputChange} 
+                      placeholder="username#1234 or @username" 
+                      className="bg-input border-border" 
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Your Discord username for club communications
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="telegramId" className="text-foreground">Telegram ID (Optional)</Label>
+                    <Input 
+                      id="telegramId" 
+                      value={formData.telegramId} 
+                      onChange={handleInputChange} 
+                      placeholder="@username" 
+                      className="bg-input border-border" 
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Your Telegram username for quick updates
+                    </p>
+                  </div>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-4">
@@ -230,7 +275,7 @@ export default function RegisterPage() {
                 </div>
 
                 {error && <div className="text-red-500 text-sm">{error}</div>}
-                <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90" size="lg" type="submit" disabled={isSubmitting}>
+                <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/80 hover:scale-[1.02] transition-all duration-200" size="lg" type="submit" disabled={isSubmitting}>
                   {isSubmitting ? "Submitting..." : (<><Calendar className="mr-2 h-5 w-5" />Submit Registration</>)}
                 </Button>
               </form>
@@ -249,7 +294,7 @@ export default function RegisterPage() {
               <p className="text-sm text-muted-foreground">Diving into Innovation</p>
             </div>
           </div>
-          <p className="text-sm text-muted-foreground">Registration opens September 22, 2024</p>
+          <p className="text-sm text-muted-foreground">Registration opens September 22, 2025</p>
         </div>
       </footer>
     </div>
