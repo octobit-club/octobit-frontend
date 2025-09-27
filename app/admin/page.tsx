@@ -185,7 +185,11 @@ export default function AdminPage() {
                       </div>
                       <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{announcement.content}</p>
                       <div className="text-xs text-muted-foreground">
-                        📅 {announcement.createdAt.toLocaleDateString()}
+                        📅 {announcement.createdAt.toLocaleDateString('en-US', { 
+                          year: 'numeric', 
+                          month: '2-digit', 
+                          day: '2-digit' 
+                        })}
                       </div>
                     </div>
                   ))}
